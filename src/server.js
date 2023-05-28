@@ -5,5 +5,7 @@ const { serverPort } = require("./secret");
 
 app.listen(serverPort, async() => {
   console.log(`Server is listening on port ${serverPort}`)
+
+  // Database connection
   await connectDB()
 })

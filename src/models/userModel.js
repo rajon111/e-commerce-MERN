@@ -1,9 +1,6 @@
-import mongoose from 'mongoose';
+const {Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
-const hash = bcrypt.hashSync(myPlaintextPassword, salt);
-
-const { Schema } = mongoose;
-
+const { defaultImgPath } = require('../secret');
 
 const userSchema = new Schema({
     name:{
@@ -30,16 +27,34 @@ const userSchema = new Schema({
         type:String,
         required:[true, 'Password is required'],
         minLength:[6, 'The minimum length of the password at least 6 characters'],
-        set:(v)=>{
-            bcrypt.hashSync(v, bcrypt.genSaltSync(10));
-        }
+        set:(v)=> bcrypt.hashSync(v, bcrypt.genSaltSync(10))
+
     },
     image:{
         type:String,
-        required:[true, 'Password is required'],
-        minLength:[6, 'The minimum length of the password at least 6 characters'],
-        set:(v)=>{
-            bcrypt.hashSync(v, bcrypt.genSaltSync(10));
-        }
+        default:defaultImgPath
     },
+    address:{
+        type:String,
+        required:[true, 'User address is required']
+    },
+    phone:{
+        type:String,
+        required:[true, 'User phone is required']
+    },
+    isAdmin:{
+        type:Boolean,
+        default:false
+    },
+    isBanned:{
+        type:Boolean,
+        default:false
+    }
+},{
+    timestamps:true
 })
+
+const User = model('Users',userSchema);
+
+
+module.exports = User;
