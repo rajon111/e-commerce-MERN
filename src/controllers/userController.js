@@ -1,13 +1,14 @@
 const createError = require("http-errors");
 const User = require("../models/userModel");
 const { successResponse } = require("./responseController");
+const mongoose = require("mongoose");
 
 const getUserss = async (req, res, next) => {
   try {
     // search and pageination
     const search = req.query.search || "";
     const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 1;
+    const limit = Number(req.query.limit) || 5;
 
     //searching regEXp
     // .* ---> means ki dea start/end hocche baper nah
@@ -55,4 +56,33 @@ const getUserss = async (req, res, next) => {
   }
 };
 
-module.exports = getUserss;
+const getUser = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const options = { password: 0 };
+    const user = await User.findById(id, options);
+
+    if (!user) {
+      throw createError(404, "User does not exists with this id");
+    }
+
+    return successResponse(res, {
+      statusCode: 200,
+      message: "Users successfully returned",
+      payload: {
+        user,
+      },
+    });
+  } catch (error) {
+    if (error instanceof mongoose.Error) {
+      next(createError(404, "Invalid User id "));
+      return;
+    }
+    next(error);
+  }
+};
+
+module.exports = {
+  getUserss,
+  getUser,
+};
